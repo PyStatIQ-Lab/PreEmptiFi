@@ -180,14 +180,21 @@ with col2:
                                 mode='lines', name='Closing Price',
                                 line=dict(color='#5e35b1', width=2.5)))
         
-        # Add event markers
+        # Add event markers with proper date conversion
         events = portfolio_df[portfolio_df['Symbol'] == selected_data['Symbol']]
         for _, row in events.iterrows():
-            fig.add_vline(x=datetime.now() - timedelta(days=30), 
-                          line_width=2, line_dash="dash", 
-                          line_color="red",
-                          annotation_text=row['Event'], 
-                          annotation_position="top right")
+            # Use a valid date within the chart's range
+            event_date = hist.index[-30]  # 30 days ago from the last date in history
+            
+            # Add vertical line with annotation
+            fig.add_vline(
+                x=event_date.timestamp() * 1000,  # Convert to milliseconds since epoch
+                line_width=2,
+                line_dash="dash",
+                line_color="red",
+                annotation_text=row['Event'],
+                annotation_position="top right"
+            )
         
         fig.update_layout(title=f"{selected_stock} Price Trend - Last 6 Months",
                           xaxis_title="Date",
